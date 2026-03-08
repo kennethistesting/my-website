@@ -28,7 +28,6 @@
     min-height: 100vh;
   }
 
-  /* Scanline overlay */
   body::before {
     content: '';
     position: fixed;
@@ -38,10 +37,8 @@
     z-index: 999;
   }
 
-  /* Terminal cursor blink */
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
   @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes typing { from{width:0} to{width:100%} }
   @keyframes glitch {
     0%,100%{text-shadow: 2px 0 var(--green), -2px 0 #ff0055}
     25%{text-shadow: -2px 0 var(--green), 2px 0 #ff0055}
@@ -54,7 +51,6 @@
     padding: 40px 24px 80px;
   }
 
-  /* Header */
   .header {
     border: 1px solid var(--border);
     background: var(--surface);
@@ -139,10 +135,7 @@
     font-size: 12px;
   }
 
-  .prompt {
-    color: var(--green);
-    font-weight: 600;
-  }
+  .prompt { color: var(--green); font-weight: 600; }
 
   .cursor {
     display: inline-block;
@@ -154,7 +147,6 @@
     animation: blink 1s infinite;
   }
 
-  /* Sections */
   .section {
     border: 1px solid var(--border);
     background: var(--surface);
@@ -178,19 +170,14 @@
   }
 
   .section-header:hover { color: var(--green); }
-
   .section-header .file-icon { color: var(--green); font-size: 12px; }
   .section-header .section-name { color: var(--green); font-weight: 600; font-size: 12px; }
   .section-header .toggle { margin-left: auto; transition: transform 0.2s; }
   .section-header.collapsed .toggle { transform: rotate(-90deg); }
 
-  .section-body {
-    padding: 20px 20px;
-  }
-
+  .section-body { padding: 20px; }
   .section-body.hidden { display: none; }
 
-  /* About items */
   .about-item {
     display: flex;
     gap: 10px;
@@ -211,19 +198,6 @@
   .about-item .content a { color: var(--green); text-decoration: none; border-bottom: 1px dotted var(--dim-green); }
   .about-item .content a:hover { color: #fff; }
 
-  /* Tag badges */
-  .tag {
-    display: inline-block;
-    background: #0a1a0a;
-    border: 1px solid var(--border);
-    color: var(--green);
-    border-radius: 3px;
-    padding: 2px 7px;
-    font-size: 11px;
-    margin: 3px 3px 3px 0;
-  }
-
-  /* Links grid */
   .links-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -253,7 +227,6 @@
   .link-card .link-label { font-weight: 600; }
   .link-card .link-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-  /* Now playing */
   .now-row {
     display: flex;
     align-items: center;
@@ -270,7 +243,6 @@
   .now-row .val a { color: var(--green); text-decoration: none; }
   .now-row .val a:hover { text-decoration: underline; }
 
-  /* Chat topics */
   .chat-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .chat-tag {
@@ -279,7 +251,6 @@
     padding: 6px 12px;
     font-size: 11px;
     color: var(--text);
-    cursor: default;
     transition: all 0.2s;
   }
 
@@ -289,7 +260,6 @@
     background: #0a1a0a;
   }
 
-  /* Status bar */
   .statusbar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -322,15 +292,15 @@
       <div class="dot r"></div>
       <div class="dot y"></div>
       <div class="dot g"></div>
-      <div class="terminal-title">kenneth-chong ~ personal</div>
+      <div class="terminal-title">kenneth-chong ~</div>
     </div>
     <div class="header-body">
-      <div class="avatar"><img src="https://drive.google.com/thumbnail?id=191c70hdLbPyBelPo66ycY8XNFHA5hoJw&sz=w200" alt="kenneth chong" /></div>
+      <div class="avatar">👾</div>
       <div class="header-text">
         <div class="name">kenneth chong</div>
-        <div class="tagline">performance marketer <span>//</span> new yorker <span>//</span> web3 curious</div>
+        <div class="tagline">performance marketer <span>//</span> new yorker</div>
         <div class="intro-box">
-          <span class="prompt">$ </span>hi there — native new yorker with an unhealthy obsession of cold brew and gaming.<span class="cursor"></span>
+          <span class="prompt">$ </span>hi there — native new yorker with an unhealthy obsession of coffee and gaming.<span class="cursor"></span>
         </div>
       </div>
     </div>
@@ -346,26 +316,14 @@
     <div class="section-body">
       <div class="about-item">
         <span class="line-num">01</span>
-        <span class="content">💼 performance marketing @ <a href="#">current</a></span>
+        <span class="content">💼 performance marketing @ <a href="https://current.com/" target="_blank">current</a></span>
       </div>
       <div class="about-item">
         <span class="line-num">02</span>
-        <span class="content">📝 founding member, growth mastermind @ <a href="#">primary venture partners</a></span>
+        <span class="content">🗂 prev: modern age, mona, rent the runway, jet.com (walmart ecommerce), razorfish</span>
       </div>
       <div class="about-item">
         <span class="line-num">03</span>
-        <span class="content">🦁 <a href="#">safary</a> member (batch #3) — world-class growth experts exploring web3</span>
-      </div>
-      <div class="about-item">
-        <span class="line-num">04</span>
-        <span class="content">🤓 <a href="#">$jump</a> member — marketing & ad pros passionate about web3</span>
-      </div>
-      <div class="about-item">
-        <span class="line-num">05</span>
-        <span class="content">🗂 prev: modern age, mona, <a href="#">rent the runway</a>, jet.com (walmart ecommerce), razorfish</span>
-      </div>
-      <div class="about-item">
-        <span class="line-num">06</span>
         <span class="content">🤝 prev consulting: hospitality, web3 & ecommerce SMB companies</span>
       </div>
     </div>
@@ -381,7 +339,7 @@
     <div class="section-body">
       <div class="about-item">
         <span class="line-num">01</span>
-        <span class="content" style="color: var(--muted); font-style: italic;">// add your projects here — what are you currently building?</span>
+        <span class="content" style="color: var(--muted); font-style: italic;">// coming soon</span>
       </div>
     </div>
   </div>
@@ -425,19 +383,22 @@
     <div class="section-body">
       <div class="now-row">
         <span class="label">📚 reading</span>
-        <span class="val"><a href="#">The Anatomy of the Swipe: Making Money Move</a></span>
+        <span class="val">
+          <a href="https://www.goodreads.com/series/309211-dungeon-crawler-carl" target="_blank">Dungeon Crawler Carl Series</a> &
+          <a href="https://www.goodreads.com/book/show/220161058" target="_blank">Apple in China</a>
+        </span>
       </div>
       <div class="now-row">
         <span class="label">🎮 playing</span>
-        <span class="val">The Bazaar</span>
+        <span class="val">last played: Arc Raiders — looking forward to Pokemon Pokopia</span>
       </div>
       <div class="now-row">
         <span class="label">🎵 vibes</span>
-        <span class="val"><a href="#">DtMF</a></span>
+        <span class="val"><a href="#" target="_blank">DtMF</a></span>
       </div>
       <div class="now-row">
-        <span class="label">👀 hobby</span>
-        <span class="val" style="color:var(--muted)">looking for a new one...</span>
+        <span class="label">🏓 hobby</span>
+        <span class="val">Pickleball & looking for a new one...</span>
       </div>
     </div>
   </div>
