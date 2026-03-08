@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kenneth chong</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+
+  :root {
+    --green: #00ff88;
+    --dim-green: #00cc66;
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1a2a1a;
+    --text: #c8d8c8;
+    --muted: #4a6a4a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.015) 2px, rgba(0,255,136,0.015) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Terminal cursor blink */
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes typing { from{width:0} to{width:100%} }
+  @keyframes glitch {
+    0%,100%{text-shadow: 2px 0 var(--green), -2px 0 #ff0055}
+    25%{text-shadow: -2px 0 var(--green), 2px 0 #ff0055}
+    50%{text-shadow: 2px 2px var(--green), -2px -2px #ff0055}
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 6px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .terminal-bar {
+    background: #161616;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #febc2e; }
+  .dot.g { background: #28c840; }
+
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .header-body {
+    padding: 28px 28px 24px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    border: 2px solid var(--green);
+    flex-shrink: 0;
+    background: #1a2a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    overflow: hidden;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .header-text { flex: 1; }
+
+  .name {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: -0.5px;
+    animation: glitch 8s infinite;
+  }
+
+  .tagline {
+    color: var(--muted);
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .tagline span { color: var(--green); }
+
+  .intro-box {
+    margin-top: 16px;
+    border-left: 2px solid var(--green);
+    padding-left: 12px;
+    color: var(--text);
+    font-size: 12px;
+  }
+
+  .prompt {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--green);
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+  }
+
+  /* Sections */
+  .section {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .section-header {
+    padding: 10px 16px;
+    background: #161616;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-header:hover { color: var(--green); }
+
+  .section-header .file-icon { color: var(--green); font-size: 12px; }
+  .section-header .section-name { color: var(--green); font-weight: 600; font-size: 12px; }
+  .section-header .toggle { margin-left: auto; transition: transform 0.2s; }
+  .section-header.collapsed .toggle { transform: rotate(-90deg); }
+
+  .section-body {
+    padding: 20px 20px;
+  }
+
+  .section-body.hidden { display: none; }
+
+  /* About items */
+  .about-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    align-items: flex-start;
+  }
+
+  .about-item .line-num {
+    color: var(--muted);
+    min-width: 20px;
+    text-align: right;
+    font-size: 11px;
+    padding-top: 1px;
+  }
+
+  .about-item .content { color: var(--text); }
+  .about-item .content a { color: var(--green); text-decoration: none; border-bottom: 1px dotted var(--dim-green); }
+  .about-item .content a:hover { color: #fff; }
+
+  /* Tag badges */
+  .tag {
+    display: inline-block;
+    background: #0a1a0a;
+    border: 1px solid var(--border);
+    color: var(--green);
+    border-radius: 3px;
+    padding: 2px 7px;
+    font-size: 11px;
+    margin: 3px 3px 3px 0;
+  }
+
+  /* Links grid */
+  .links-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .link-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .link-card:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: #0a1a0a;
+  }
+
+  .link-card .icon { font-size: 18px; }
+  .link-card .link-label { font-weight: 600; }
+  .link-card .link-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  /* Now playing */
+  .now-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .now-row .label { color: var(--muted); min-width: 80px; font-size: 11px; }
+  .now-row .val { color: var(--text); }
+  .now-row .val a { color: var(--green); text-decoration: none; }
+  .now-row .val a:hover { text-decoration: underline; }
+
+  /* Chat topics */
+  .chat-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .chat-tag {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 11px;
+    color: var(--text);
+    cursor: default;
+    transition: all 0.2s;
+  }
+
+  .chat-tag:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: #0a1a0a;
+  }
+
+  /* Status bar */
+  .statusbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--green);
+    color: #000;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    font-weight: 600;
+  }
+
+  @media (max-width: 500px) {
+    .header-body { flex-direction: column; }
+    .links-grid { grid-template-columns: 1fr; }
+    .name { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="terminal-bar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <div class="terminal-title">kenneth-chong ~ personal</div>
+    </div>
+    <div class="header-body">
+      <div class="avatar"><img src="https://drive.google.com/thumbnail?id=191c70hdLbPyBelPo66ycY8XNFHA5hoJw&sz=w200" alt="kenneth chong" /></div>
+      <div class="header-text">
+        <div class="name">kenneth chong</div>
+        <div class="tagline">performance marketer <span>//</span> new yorker <span>//</span> web3 curious</div>
+        <div class="intro-box">
+          <span class="prompt">$ </span>hi there — native new yorker with an unhealthy obsession of cold brew and gaming.<span class="cursor"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="file-icon">📁</span>
+      <span class="section-name">about.md</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="about-item">
+        <span class="line-num">01</span>
+        <span class="content">💼 performance marketing @ <a href="#">current</a></span>
+      </div>
+      <div class="about-item">
+        <span class="line-num">02</span>
+        <span class="content">📝 founding member, growth mastermind @ <a href="#">primary venture partners</a></span>
+      </div>
+      <div class="about-item">
+        <span class="line-num">03</span>
+        <span class="content">🦁 <a href="#">safary</a> member (batch #3) — world-class growth experts exploring web3</span>
+      </div>
+      <div class="about-item">
+        <span class="line-num">04</span>
+        <span class="content">🤓 <a href="#">$jump</a> member — marketing & ad pros passionate about web3</span>
+      </div>
+      <div class="about-item">
+        <span class="line-num">05</span>
+        <span class="content">🗂 prev: modern age, mona, <a href="#">rent the runway</a>, jet.com (walmart ecommerce), razorfish</span>
+      </div>
+      <div class="about-item">
+        <span class="line-num">06</span>
+        <span class="content">🤝 prev consulting: hospitality, web3 & ecommerce SMB companies</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="file-icon">🚀</span>
+      <span class="section-name">projects.md</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="about-item">
+        <span class="line-num">01</span>
+        <span class="content" style="color: var(--muted); font-style: italic;">// add your projects here — what are you currently building?</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LINKS -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="file-icon">🔗</span>
+      <span class="section-name">links.md</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="links-grid">
+        <a href="http://linkedin.com/in/kennethchong" target="_blank" class="link-card">
+          <span class="icon">💼</span>
+          <div><div class="link-label">linkedin</div><div class="link-sub">/in/kennethchong</div></div>
+        </a>
+        <a href="https://www.instagram.com/kennethchong.xyz/" target="_blank" class="link-card">
+          <span class="icon">📷</span>
+          <div><div class="link-label">instagram</div><div class="link-sub">@kennethchong.xyz</div></div>
+        </a>
+        <a href="https://x.com/kennethchongeth" target="_blank" class="link-card">
+          <span class="icon">🐦</span>
+          <div><div class="link-label">twitter / x</div><div class="link-sub">@kennethchongeth</div></div>
+        </a>
+        <a href="https://explorewithkenneth.wordpress.com/" target="_blank" class="link-card">
+          <span class="icon">✈️</span>
+          <div><div class="link-label">travel blog</div><div class="link-sub">explorewithkenneth</div></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOW -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="file-icon">💊</span>
+      <span class="section-name">current_addictions.md</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="now-row">
+        <span class="label">📚 reading</span>
+        <span class="val"><a href="#">The Anatomy of the Swipe: Making Money Move</a></span>
+      </div>
+      <div class="now-row">
+        <span class="label">🎮 playing</span>
+        <span class="val">The Bazaar</span>
+      </div>
+      <div class="now-row">
+        <span class="label">🎵 vibes</span>
+        <span class="val"><a href="#">DtMF</a></span>
+      </div>
+      <div class="now-row">
+        <span class="label">👀 hobby</span>
+        <span class="val" style="color:var(--muted)">looking for a new one...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="file-icon">🤝</span>
+      <span class="section-name">lets_chat.md</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">
+        <span class="prompt">$ </span>reach out if you want to talk about:
+      </p>
+      <div class="chat-wrap">
+        <div class="chat-tag">💡 growth marketing</div>
+        <div class="chat-tag">🏓 pickleball</div>
+        <div class="chat-tag">🌐 web3</div>
+        <div class="chat-tag">🎮 gaming</div>
+        <div class="chat-tag">👟 sneakers</div>
+        <div class="chat-tag">🗺 traveling</div>
+        <div class="chat-tag">🥾 hiking</div>
+        <div class="chat-tag">☕ coffee</div>
+      </div>
+      <p style="font-size:12px; color:var(--muted); margin-top:16px;">
+        → or just grab coffee — reach me on <a href="http://linkedin.com/in/kennethchong" target="_blank" style="color:var(--green)">linkedin</a>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <span>● NORMAL</span>
+  <span>kennethchong.xyz</span>
+  <span>UTF-8</span>
+</div>
+
+<script>
+  function toggle(header) {
+    header.classList.toggle('collapsed');
+    const body = header.nextElementSibling;
+    body.classList.toggle('hidden');
+  }
+</script>
+</body>
+</html>
